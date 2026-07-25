@@ -41,3 +41,8 @@ class PostResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PostUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=1, max_length = 200)
+    content: str | None = Field(default=None, min_length=1)
+
