@@ -46,3 +46,16 @@ class PostUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length = 200)
     content: str | None = Field(default=None, min_length=1)
 
+class CommentCreate(BaseModel):
+    content: str = Field(min_length = 1)
+
+class CommentResponse(BaseModel):
+    id: int
+    content: str
+    created_at: datetime
+    user_id: int 
+    post_id: int
+    author: AuthorResponse
+
+    class Config:
+        from_attributes = True

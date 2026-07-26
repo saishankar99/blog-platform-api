@@ -70,3 +70,26 @@ def delete_post(
 
     db.delete(post)
     db.commit()
+
+@router.post("/{post_id}/comments",status_code=status.HTTP_201_CREATED,response_model = schemas.CommentResponse)
+def create_comment(post_id: int , comment: schemas.CommentCreate,db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    post=db.query(models.Post).filter(models.Post.id==post_id).first()
+    if post is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_Found, detail = "Post not found")
+    new_comment=models.Comment(
+        content = comment.content,
+        user_id = current_user.id,
+        post_id = post_id
+    )
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+    return new_comment
+
+@router.get("/{post_id}/comments",response_model=list[schemas.CommentResponse])
+def get_comments(post_id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id==post_id).first()
+    if post is None:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND,detail = "Post not found")
+
+    return post.comments
